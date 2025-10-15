@@ -113,6 +113,58 @@ class UserController {
             res.status(500).json({ error: error.message });
         }
     }
+    static async updateUser(req, res) {
+        try {
+            const { id } = req.params;
+            const { username, email, is_active } = req.body;
+
+            const user = await User.findById(id);
+            if (!user) {
+                return res.status(404).json({ error: 'Usuario no encontrado' });
+            }
+
+            const updatedUser = await User.update(id, { username, email, is_active });
+
+            res.json({
+                message: 'Usuario actualizado exitosamente',
+                user: updatedUser
+            });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    //Eliminar usuario
+    static async deleteUser(req, res) {
+        try {
+            const { id } = req.params;
+            const user = await User.delete(id);
+            if (!user) {
+                return res.status(404).json({ error: 'Usuario no encontrado' });
+            }
+            res.json({ message: 'Usuario eliminado exitosamente' });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    //Cambiar la contraseña de un usuario
+    static async changePassword(req, res) {
+        try {
+            const { id } = req.params;
+            const { newPassword } = req.body;
+
+            if (!newPassword) {
+                return res.status(400).json({ error: 'La nueva contraseña es requerida' });
+            }
+
+            await User.changePassword(id, newPassword);
+
+            res.json({ message: 'Contraseña actualizada exitosamente' });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = UserController;
