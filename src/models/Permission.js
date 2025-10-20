@@ -16,6 +16,20 @@ class Permission {
         );
         return result.rows[0];
     }
+    //Crear un nuevo permiso
+    static async create(permissionData) {
+        const { name, description, resource, action } = permissionData;
+
+        const result = await db.query(
+            `INSERT INTO permissions (name, description, resource, action) 
+             VALUES ($1, $2, $3, $4) 
+             ON CONFLICT (name) DO NOTHING 
+             RETURNING *`, // Solo retorna algo si se insertó una nueva fila
+            [name, description, resource, action]
+        );
+
+        return result.rows[0];
+    }
     //Buscar un permiso por su nombre
     static async findByName(name) {
         const result = await db.query(
